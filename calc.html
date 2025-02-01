@@ -1,0 +1,142 @@
+<!DOCTYP<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSP Calc</title>
+
+    <style>
+        body {
+            width: 240pt;
+        }
+
+        body,
+        h1,
+        h2,
+        p,
+        div,
+        label,
+        table,
+        tr,
+        th,
+        td,
+        input {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12pt;
+            line-height: normal;
+        }
+
+        h1 {
+            font-size: 120%;
+        }
+
+        h2 {
+            font-size: 110%;
+        }
+
+        label {
+            display: block;
+            width: 100%;
+        }
+
+        input {
+            width: 48%;
+        }
+
+        label>span {
+            width: 48%;
+            display: inline-block;
+            margin: 0.3em 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 98%;
+        }
+
+        table td {
+            border: 1px solid silver;
+            width: 48%;
+        }
+
+        div {
+            width: 100%;
+        }
+    </style>
+
+
+</head>
+
+
+<body>
+
+    <h1>KSP Launch Window Calculator</h1>
+    <div>
+        <h2>Current position:</h2>
+        <label><span>Latitude:</span><input type="number" id="latitude" value='-0.1025'/></label>
+    </div>
+    <div>
+        <h2>Target orbit:</h2>
+        <label><span>Inclination:</span><input type="number" id="targetInc" /></label>
+        <label><span>LAN:</span><input type="number" id="targetLAN" /></label>
+    </div>
+    <div>
+        <h2>Launch parameters:</h2>
+        <table>
+            <tr>
+                <td><b>Orbit LAN</b></td>
+                <td><b>Azimuth</b></td>
+            </tr>
+            <tr>
+                <td id="L1">&nbsp;</td>
+                <td id="A1">&nbsp;</td>
+            </tr>
+            <tr>
+                <td id="L2">&nbsp;</td>
+                <td id="A2">&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <script>
+        const d2r = Math.PI / 180;
+        const r2d = 180 / Math.PI;
+        const twoPi = 2 * Math.PI;
+        const halfPi = Math.PI / 2;
+
+        const inputHandler = function () {
+            const lat = parseFloat(latitude.value) * d2r;
+            const LAN = parseFloat(targetLAN.value) * d2r;
+            const inc = parseFloat(targetInc.value) * d2r;
+            const lan1 = (LAN + Math.asin(Math.tan(lat) / Math.tan(inc)) + (lat > 0 ? -1 : 1) * halfPi + twoPi) % twoPi;
+            const lan2 = (lan1 + Math.PI + twoPi) % twoPi;
+            const azimuth1 = (Math.asin(Math.cos(inc) / Math.cos(lat)) + twoPi) % twoPi;
+            const azimuth2 = (Math.PI - azimuth1 + twoPi) % twoPi;
+
+            L1.innerText = Math.round(lan1 * r2d * 100) / 100;
+            L2.innerText = Math.round(lan2 * r2d * 100) / 100;
+            A1.innerText = Math.round(azimuth1 * r2d * 100) / 100;
+            A2.innerText = Math.round(azimuth2 * r2d * 100) / 100;
+
+        }
+
+        const latitude = document.getElementById('latitude');
+        const targetLAN = document.getElementById('targetLAN')
+        const targetInc = document.getElementById('targetInc');
+
+        const L1 = document.getElementById('L1');
+        const L2 = document.getElementById('L2');
+        const A1 = document.getElementById('A1');
+        const A2 = document.getElementById('A2');
+
+        latitude.addEventListener('input', inputHandler);
+        targetLAN.addEventListener('input', inputHandler);
+        targetInc.addEventListener('input', inputHandler);
+
+    </script>
+
+</body>
+
+</html>
