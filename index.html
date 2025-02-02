@@ -117,8 +117,9 @@
             let tV = parseFloat(targetV.value);
             const lan1 = (LAN + Math.asin(Math.tan(lat) / Math.tan(inc)) + (lat > 0 ? -1 : 1) * halfPi + twoPi) % twoPi;
             const lan2 = (lan1 + Math.PI + twoPi) % twoPi;
-            let azimuth1 = (Math.asin(Math.cos(inc) / Math.cos(lat)) + twoPi) % twoPi;
-            if (tV != 'NaN' && tV != 0) azimuth1 = Math.atan2(tV * Math.sin(azimuth1) - cV, tV * Math.cos(azimuth1));
+            let azimuth1 = Math.asin(Math.cos(inc) / Math.cos(lat));
+            if (!isNaN(tV) && tV != 0) azimuth1 = (Math.atan2(tV * Math.sin(azimuth1) - cV, tV * Math.cos(azimuth1)) + twoPi) % twoPi;
+            azimuth1 = (azimuth1 + twoPi) % twoPi;
             const azimuth2 = (Math.PI - azimuth1 + twoPi) % twoPi;
 
             L1.innerText = Math.round(lan1 * r2d * 100) / 100 + "°";
