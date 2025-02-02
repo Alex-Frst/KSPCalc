@@ -1,4 +1,4 @@
-<!DOCTYP<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,6 +9,7 @@
     <style>
         body {
             width: 240pt;
+            margin: 0 auto;
         }
 
         body,
@@ -41,11 +42,11 @@
         }
 
         input {
-            width: 48%;
+            width: 40%;
         }
 
         label>span {
-            width: 48%;
+            width: 56%;
             display: inline-block;
             margin: 0.3em 0;
         }
@@ -74,12 +75,14 @@
     <h1>KSP Launch Window Calculator</h1>
     <div>
         <h2>Current position:</h2>
-        <label><span>Latitude:</span><input type="number" id="latitude" value='-0.1025'/></label>
+        <label><span>Latitude, °:</span><input type="number" id="latitude" value='-0.1025' /></label>
+        <label><span>Orbial velocity, m/s:</span><input type="number" id="v" value='175' /></label>
     </div>
     <div>
         <h2>Target orbit:</h2>
-        <label><span>Inclination:</span><input type="number" id="targetInc" /></label>
-        <label><span>LAN:</span><input type="number" id="targetLAN" /></label>
+        <label><span>Inclination, °:</span><input type="number" id="targetInc" /></label>
+        <label><span>LAN, °:</span><input type="number" id="targetLAN" /></label>
+        <label><span>Horizontal velocity, m/s:</span><input type="number" id="targetV" value='2295' /></label>
     </div>
     <div>
         <h2>Launch parameters:</h2>
@@ -108,23 +111,28 @@
 
         const inputHandler = function () {
             const lat = parseFloat(latitude.value) * d2r;
+            const cV = parseFloat(v.value);
             const LAN = parseFloat(targetLAN.value) * d2r;
             const inc = parseFloat(targetInc.value) * d2r;
+            let tV = parseFloat(targetV.value);
             const lan1 = (LAN + Math.asin(Math.tan(lat) / Math.tan(inc)) + (lat > 0 ? -1 : 1) * halfPi + twoPi) % twoPi;
             const lan2 = (lan1 + Math.PI + twoPi) % twoPi;
-            const azimuth1 = (Math.asin(Math.cos(inc) / Math.cos(lat)) + twoPi) % twoPi;
+            let azimuth1 = (Math.asin(Math.cos(inc) / Math.cos(lat)) + twoPi) % twoPi;
+            if (tV != 'NaN' && tV != 0) azimuth1 = Math.atan2(tV * Math.sin(azimuth1) - cV, tV * Math.cos(azimuth1));
             const azimuth2 = (Math.PI - azimuth1 + twoPi) % twoPi;
 
-            L1.innerText = Math.round(lan1 * r2d * 100) / 100;
-            L2.innerText = Math.round(lan2 * r2d * 100) / 100;
-            A1.innerText = Math.round(azimuth1 * r2d * 100) / 100;
-            A2.innerText = Math.round(azimuth2 * r2d * 100) / 100;
+            L1.innerText = Math.round(lan1 * r2d * 100) / 100 + "°";
+            L2.innerText = Math.round(lan2 * r2d * 100) / 100 + "°";
+            A1.innerText = Math.round(azimuth1 * r2d * 100) / 100 + "°";
+            A2.innerText = Math.round(azimuth2 * r2d * 100) / 100 + "°";
 
         }
 
         const latitude = document.getElementById('latitude');
+        const v = document.getElementById('v');
         const targetLAN = document.getElementById('targetLAN')
         const targetInc = document.getElementById('targetInc');
+        const targetV = document.getElementById('targetV');
 
         const L1 = document.getElementById('L1');
         const L2 = document.getElementById('L2');
@@ -132,8 +140,10 @@
         const A2 = document.getElementById('A2');
 
         latitude.addEventListener('input', inputHandler);
+        v.addEventListener('input', inputHandler);
         targetLAN.addEventListener('input', inputHandler);
         targetInc.addEventListener('input', inputHandler);
+        targetV.addEventListener('input', inputHandler);
 
     </script>
 
